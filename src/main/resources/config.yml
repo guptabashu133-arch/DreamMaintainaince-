@@ -1,50 +1,55 @@
 # =========================================================
-#  DreamMaintenance - Velocity config
+#  DreamMaintenance - Velocity config (TaraashMC)
 #  /maintenance  likho -> clickable panel khulega, ek click mein sab kaam
+#  Colours: #FFD23F = highlight, gray = normal, #FF5E5E = error/warning
 # =========================================================
+
+# Shadow under every message: "#000000" = black, "#00000080" = half see-through, "none" = off
+text-shadow: "#000000"
 
 # Maintenance ON hone par server list mein ye MOTD dikhega.
 # Placeholders: <reason> = selected preset ka reason, <remaining> = timer ka bacha time
 motd:
-  line1: "<gradient:#FF5555:#FFAA00><bold>⚠ SERVER IN MAINTENANCE ⚠</bold></gradient>"
-  line2: "<gray><reason></gray> <dark_gray>|</dark_gray> <yellow><remaining></yellow>"
+  line1: "               <white>★</white> <#FFD23F><bold>TARAASHMC</bold></#FFD23F> <dark_gray>»</dark_gray> <#FF5E5E><bold>MAINTENANCE</bold></#FF5E5E>"
+  line2: "          <gray><reason></gray> <dark_gray>•</dark_gray> <#FFD23F><remaining></#FFD23F>"
 
-# Player count ki jagah red text (server list mein)
-version-text: "<red>⚠ Maintenance"
+# Player count ki jagah ye text dikhega (server list mein)
+version-text: "<#FF5E5E>⚠ Maintenance"
 
 # Player count pe mouse le jaane par ye lines dikhengi
 hover-lines:
-  - "<red><bold>Maintenance Mode</bold></red>"
-  - "<gray>Reason: <white><reason></white></gray>"
+  - "<#FFD23F><bold>TARAASHMC</bold></#FFD23F> <dark_gray>»</dark_gray> <#FF5E5E>Maintenance</#FF5E5E>"
+  - ""
+  - "<gray>Reason:</gray> <white><reason></white>"
   - "<gray><remaining></gray>"
   - ""
-  - "<gray>Discord: <aqua>discord.gg/yourserver</aqua></gray>"
+  - "<gray>Discord:</gray> <#FFD23F>discord.gg/taraashmc</#FFD23F>"
 
 # plugins/dreammaintenance/maintenance-icon.png (64x64) daaloge to wo icon dikhega
 use-custom-icon: true
 
 # <remaining> ka text: jab end-timer laga ho / na laga ho
-remaining-format: "Wapas aayenge: <time>"
-no-timer-text: "Jaldi wapas aayenge!"
+remaining-format: "Back in <time>"
+no-timer-text: "We'll be back soon!"
 
 # One-click presets - /maintenance panel mein button ban jaate hain.
 # Button dabate hi maintenance ON + MOTD mein ye reason aa jayega.
 presets:
   update:
     display: "<aqua>Update</aqua>"
-    reason: "Naya update aa raha hai!"
+    reason: "A new update is on the way!"
   bugfix:
-    display: "<yellow>Bug Fix</yellow>"
-    reason: "Bugs fix ho rahe hain"
+    display: "<#FFD23F>Bug Fix</#FFD23F>"
+    reason: "We're fixing some bugs"
   event:
     display: "<light_purple>Event</light_purple>"
-    reason: "Event ki taiyari chal rahi hai"
+    reason: "Setting up a new event"
   restart:
-    display: "<red>Restart</red>"
-    reason: "Server restart ho raha hai"
+    display: "<#FF5E5E>Restart</#FF5E5E>"
+    reason: "The server is restarting"
   emergency:
     display: "<dark_red>Emergency</dark_red>"
-    reason: "Emergency fix chal raha hai"
+    reason: "Emergency maintenance"
 default-preset: update
 
 # Maintenance ON hote hi online players (jinke paas bypass nahi) ko kick karna hai?
@@ -61,26 +66,26 @@ panel-start-timers: [1m, 5m, 10m]
 panel-end-timers: [30m, 1h, 2h]
 
 messages:
-  prefix: "<gradient:#FF5555:#FFAA00><bold>Maintenance</bold></gradient> <dark_gray>»</dark_gray> "
+  prefix: "<white>★</white> <#FFD23F><bold>TARAASHMC</bold></#FFD23F> <dark_gray>»</dark_gray> "
   # Kick / join-deny screen (prefix nahi lagta)
-  kick-message: "<red><bold>⚠ Server Maintenance ⚠</bold></red>\n\n<gray><reason></gray>\n<yellow><remaining></yellow>"
-  server-denied: "<red><server></red> <gray>abhi maintenance mein hai.</gray>"
-  enabled: "<red>Maintenance <bold>ON</bold> ho gaya.</red> <gray>Reason: <white><reason>"
-  disabled: "<green>Maintenance <bold>OFF</bold> ho gaya. Server sabke liye khul gaya!</green>"
-  already-enabled: "<gray>Maintenance pehle se ON hai.</gray>"
-  already-disabled: "<gray>Maintenance pehle se OFF hai.</gray>"
-  countdown: "<red>Maintenance <yellow><time></yellow> mein shuru hoga!</red> <gray>(<reason>)</gray>"
-  start-timer-set: "<yellow>Maintenance <white><time></white> mein shuru hoga.</yellow>"
-  end-timer-set: "<yellow>Maintenance <white><time></white> baad apne aap OFF ho jayega.</yellow>"
-  timers-aborted: "<gray>Saare timers cancel kar diye.</gray>"
-  reason-set: "<gray>Reason set: <white><reason>"
-  unknown-preset: "<red>Ye preset nahi mila: <white><preset>"
-  invalid-time: "<red>Galat time! Example: 30s, 5m, 1h30m</red>"
-  whitelist-added: "<green><player></green> <gray>whitelist mein add ho gaya.</gray>"
-  whitelist-removed: "<red><player></red> <gray>whitelist se hata diya.</gray>"
-  whitelist-not-found: "<red><player> whitelist mein nahi hai.</red>"
-  whitelist-empty: "<gray>Whitelist khaali hai.</gray>"
-  server-enabled: "<red><server></red> <gray>ab maintenance mein hai.</gray>"
-  server-disabled: "<green><server></green> <gray>maintenance se bahar.</gray>"
-  unknown-server: "<red>Server nahi mila: <white><server>"
-  reloaded: "<green>Config reload ho gaya.</green>"
+  kick-message: "<#FFD23F><bold>TARAASHMC</bold></#FFD23F>\n<#FF5E5E><bold>⚠ Server Maintenance</bold></#FF5E5E>\n\n<gray><reason></gray>\n<#FFD23F><remaining></#FFD23F>\n\n<gray>Discord:</gray> <#FFD23F>discord.gg/taraashmc</#FFD23F>"
+  server-denied: "<#FFD23F><server></#FFD23F> <#FF5E5E>is under maintenance right now.</#FF5E5E>"
+  enabled: "<#FF5E5E>Maintenance is now <bold>ON</bold>.</#FF5E5E> <gray>Reason:</gray> <white><reason></white>"
+  disabled: "<green>Maintenance is now <bold>OFF</bold>. TaraashMC is open for everyone!</green>"
+  already-enabled: "<gray>Maintenance is already ON.</gray>"
+  already-disabled: "<gray>Maintenance is already OFF.</gray>"
+  countdown: "<#FF5E5E>Maintenance starts in</#FF5E5E> <#FFD23F><time></#FFD23F><#FF5E5E>!</#FF5E5E> <gray>(<reason>)</gray>"
+  start-timer-set: "<gray>Maintenance will start in</gray> <#FFD23F><time></#FFD23F><gray>.</gray>"
+  end-timer-set: "<gray>Maintenance will turn off by itself in</gray> <#FFD23F><time></#FFD23F><gray>.</gray>"
+  timers-aborted: "<gray>All timers cancelled.</gray>"
+  reason-set: "<gray>Reason set:</gray> <white><reason></white>"
+  unknown-preset: "<#FF5E5E>No preset called</#FF5E5E> <#FFD23F><preset></#FFD23F><#FF5E5E>.</#FF5E5E>"
+  invalid-time: "<#FF5E5E>That's not a valid time. Examples: 30s, 5m, 1h30m</#FF5E5E>"
+  whitelist-added: "<#FFD23F><player></#FFD23F> <gray>was added to the maintenance whitelist.</gray>"
+  whitelist-removed: "<#FFD23F><player></#FFD23F> <gray>was removed from the maintenance whitelist.</gray>"
+  whitelist-not-found: "<#FFD23F><player></#FFD23F> <#FF5E5E>isn't on the maintenance whitelist.</#FF5E5E>"
+  whitelist-empty: "<gray>The maintenance whitelist is empty.</gray>"
+  server-enabled: "<#FFD23F><server></#FFD23F> <gray>is now under maintenance.</gray>"
+  server-disabled: "<#FFD23F><server></#FFD23F> <gray>is out of maintenance.</gray>"
+  unknown-server: "<#FF5E5E>No server called</#FF5E5E> <#FFD23F><server></#FFD23F><#FF5E5E>.</#FF5E5E>"
+  reloaded: "<green>Config reloaded.</green>"

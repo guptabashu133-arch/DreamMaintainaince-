@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -60,18 +59,18 @@ final class MaintenanceCommand implements SimpleCommand {
         switch (a[0].toLowerCase(Locale.ROOT)) {
             case "on" -> {
                 if (data.enabled && a.length == 1) {
-                    src.sendMessage(plugin.msg("already-enabled"));
+                    send(src, plugin.msg("already-enabled"));
                 } else {
                     boolean wasOn = data.enabled;
                     plugin.enable(a.length > 1 ? join(a, 1) : null);
                     if (wasOn) {
-                        src.sendMessage(plugin.msg("reason-set"));
+                        send(src, plugin.msg("reason-set"));
                     }
                 }
             }
             case "off" -> {
                 if (!data.enabled && data.startAt == 0) {
-                    src.sendMessage(plugin.msg("already-disabled"));
+                    send(src, plugin.msg("already-disabled"));
                 } else {
                     plugin.disable();
                 }
@@ -85,24 +84,24 @@ final class MaintenanceCommand implements SimpleCommand {
             }
             case "preset", "reason" -> {
                 if (a.length < 2) {
-                    src.sendMessage(plugin.msg("reason-set"));
+                    send(src, plugin.msg("reason-set"));
                     break;
                 }
                 boolean preset = plugin.setReason(join(a, 1));
                 if (a[0].equalsIgnoreCase("preset") && !preset) {
-                    src.sendMessage(plugin.msg("unknown-preset", "preset", a[1]));
+                    send(src, plugin.msg("unknown-preset", "preset", a[1]));
                     break;
                 }
-                src.sendMessage(plugin.msg("reason-set"));
+                send(src, plugin.msg("reason-set"));
             }
             case "timer" -> {
                 long secs = a.length < 2 ? -1 : TimeUtil.parseSeconds(a[1]);
                 if (secs <= 0) {
-                    src.sendMessage(plugin.msg("invalid-time"));
+                    send(src, plugin.msg("invalid-time"));
                     break;
                 }
                 if (data.enabled) {
-                    src.sendMessage(plugin.msg("already-enabled"));
+                    send(src, plugin.msg("already-enabled"));
                     break;
                 }
                 if (a.length > 2) {
@@ -110,12 +109,12 @@ final class MaintenanceCommand implements SimpleCommand {
                 }
                 data.startAt = System.currentTimeMillis() + secs * 1000;
                 plugin.saveAsync();
-                src.sendMessage(plugin.msg("start-timer-set", "time", TimeUtil.format(secs)));
+                send(src, plugin.msg("start-timer-set", "time", TimeUtil.format(secs)));
             }
             case "endtimer" -> {
                 long secs = a.length < 2 ? -1 : TimeUtil.parseSeconds(a[1]);
                 if (secs <= 0) {
-                    src.sendMessage(plugin.msg("invalid-time"));
+                    send(src, plugin.msg("invalid-time"));
                     break;
                 }
                 if (!data.enabled) {
@@ -123,34 +122,34 @@ final class MaintenanceCommand implements SimpleCommand {
                 }
                 data.endAt = System.currentTimeMillis() + secs * 1000;
                 plugin.saveAsync();
-                src.sendMessage(plugin.msg("end-timer-set", "time", TimeUtil.format(secs)));
+                send(src, plugin.msg("end-timer-set", "time", TimeUtil.format(secs)));
             }
             case "abort" -> {
                 data.startAt = 0;
                 data.endAt = 0;
                 plugin.saveAsync();
-                src.sendMessage(plugin.msg("timers-aborted"));
+                send(src, plugin.msg("timers-aborted"));
             }
             case "add" -> {
                 if (a.length < 2) {
-                    src.sendMessage(Component.text("/maintenance add <player>", NamedTextColor.RED));
+                    send(src, Component.text("/maintenance add <player>", NamedTextColor.RED));
                     break;
                 }
                 data.whitelist.put(a[1].toLowerCase(Locale.ROOT), a[1]);
                 plugin.saveAsync();
-                src.sendMessage(plugin.msg("whitelist-added", "player", a[1]));
+                send(src, plugin.msg("whitelist-added", "player", a[1]));
             }
             case "remove" -> {
                 if (a.length < 2) {
-                    src.sendMessage(Component.text("/maintenance remove <player>", NamedTextColor.RED));
+                    send(src, Component.text("/maintenance remove <player>", NamedTextColor.RED));
                     break;
                 }
                 if (data.whitelist.remove(a[1].toLowerCase(Locale.ROOT)) == null) {
-                    src.sendMessage(plugin.msg("whitelist-not-found", "player", a[1]));
+                    send(src, plugin.msg("whitelist-not-found", "player", a[1]));
                     break;
                 }
                 plugin.saveAsync();
-                src.sendMessage(plugin.msg("whitelist-removed", "player", a[1]));
+                send(src, plugin.msg("whitelist-removed", "player", a[1]));
             }
             case "list" -> whitelist(src);
             case "server" -> {
@@ -160,27 +159,27 @@ final class MaintenanceCommand implements SimpleCommand {
                 }
                 Optional<RegisteredServer> server = plugin.proxy().getServer(a[1]);
                 if (server.isEmpty()) {
-                    src.sendMessage(plugin.msg("unknown-server", "server", a[1]));
+                    send(src, plugin.msg("unknown-server", "server", a[1]));
                     break;
                 }
                 String name = server.get().getServerInfo().getName();
                 boolean on = a.length > 2 ? a[2].equalsIgnoreCase("on") : !plugin.isServerInMaintenance(name);
                 plugin.setServerMaintenance(server.get(), on);
-                src.sendMessage(plugin.msg(on ? "server-enabled" : "server-disabled", "server", name));
+                send(src, plugin.msg(on ? "server-enabled" : "server-disabled", "server", name));
             }
             case "servers" -> servers(src);
             case "motd" -> {
                 YamlConfig cfg = plugin.config();
-                src.sendMessage(plugin.prefix().append(Component.text("MOTD preview:", NamedTextColor.GRAY)));
-                src.sendMessage(plugin.mini(cfg.getString("motd.line1", "")));
-                src.sendMessage(plugin.mini(cfg.getString("motd.line2", "")));
+                send(src, plugin.prefix().append(Component.text("MOTD preview:", NamedTextColor.GRAY)));
+                send(src, plugin.mini(cfg.getString("motd.line1", "")));
+                send(src, plugin.mini(cfg.getString("motd.line2", "")));
             }
             case "reload" -> {
                 try {
                     plugin.reload();
-                    src.sendMessage(plugin.msg("reloaded"));
+                    send(src, plugin.msg("reloaded"));
                 } catch (IOException e) {
-                    src.sendMessage(Component.text("Reload failed: " + e.getMessage(), NamedTextColor.RED));
+                    send(src, Component.text("Reload failed: " + e.getMessage(), NamedTextColor.RED));
                 }
             }
             default -> help(src);
@@ -190,6 +189,10 @@ final class MaintenanceCommand implements SimpleCommand {
         }
     }
 
+    private void send(CommandSource src, Component message) {
+        src.sendMessage(plugin.shadow(message));
+    }
+
     private static String join(String[] a, int from) {
         return String.join(" ", Arrays.copyOfRange(a, from, a.length));
     }
@@ -197,13 +200,11 @@ final class MaintenanceCommand implements SimpleCommand {
     // ------------------------------------------------------------------ panel
 
     private static Component button(Component label, NamedTextColor bracket, String command, Component hover) {
-        return Component.text()
-                .append(Component.text("[", bracket))
+        return Component.text("[", bracket)
                 .append(label)
                 .append(Component.text("]", bracket))
                 .clickEvent(ClickEvent.runCommand(command))
-                .hoverEvent(HoverEvent.showText(hover))
-                .build();
+                .hoverEvent(HoverEvent.showText(hover));
     }
 
     private static Component button(String label, NamedTextColor color, String command, String hover) {
@@ -223,102 +224,102 @@ final class MaintenanceCommand implements SimpleCommand {
         String p = " " + PANEL_FLAG;
         Component space = Component.text(" ");
 
-        src.sendMessage(line());
-        src.sendMessage(Component.text(" ").append(plugin.prefix())
+        send(src, line());
+        send(src, Component.text(" ").append(plugin.prefix())
                 .append(Component.text("Control Panel", NamedTextColor.WHITE, TextDecoration.BOLD)));
-        src.sendMessage(Component.text(" Status: ", NamedTextColor.GRAY)
+        send(src, Component.text(" Status: ", NamedTextColor.GRAY)
                 .append(data.enabled
                         ? Component.text("● ON", NamedTextColor.RED, TextDecoration.BOLD)
                         : Component.text("● OFF", NamedTextColor.GREEN, TextDecoration.BOLD))
                 .append(Component.text("   Reason: ", NamedTextColor.GRAY))
                 .append(Component.text(plugin.reason(), NamedTextColor.WHITE)));
-        src.sendMessage(Component.text(" Timer: ", NamedTextColor.GRAY)
+        send(src, Component.text(" Timer: ", NamedTextColor.GRAY)
                 .append(Component.text(data.startAt > 0 || data.endAt > 0 ? plugin.remainingText() : "none",
                         NamedTextColor.YELLOW)));
-        src.sendMessage(Component.empty());
+        send(src, Component.empty());
 
-        src.sendMessage(Component.text(" ")
-                .append(button("✔ ENABLE", NamedTextColor.RED, "/maintenance on" + p, "Maintenance ON - non-whitelisted players kick"))
+        send(src, Component.text(" ")
+                .append(button("✔ ENABLE", NamedTextColor.RED, "/maintenance on" + p, "Turn maintenance ON (kicks players who aren't whitelisted)"))
                 .append(space)
-                .append(button("✘ DISABLE", NamedTextColor.GREEN, "/maintenance off" + p, "Maintenance OFF - server sabke liye khulega"))
+                .append(button("✘ DISABLE", NamedTextColor.GREEN, "/maintenance off" + p, "Turn maintenance OFF (opens the server for everyone)"))
                 .append(space)
-                .append(button("MOTD", NamedTextColor.AQUA, "/maintenance motd", "MOTD preview dekho")));
+                .append(button("MOTD", NamedTextColor.AQUA, "/maintenance motd", "Preview the maintenance MOTD")));
 
         // One click presets: maintenance ON + MOTD reason
-        TextComponent.Builder presets = Component.text().append(Component.text(" One-click: ", NamedTextColor.GRAY));
+        Component presets = Component.empty().append(Component.text(" One-click: ", NamedTextColor.GRAY));
         String current = data.customReason == null ? data.preset : null;
         for (String key : cfg.getKeys("presets")) {
             Component label = mm.deserialize(cfg.getString("presets." + key + ".display", key));
             boolean selected = key.equalsIgnoreCase(current) && data.enabled;
-            Component hover = Component.text("Maintenance ON + MOTD: ", NamedTextColor.GRAY)
+            Component hover = Component.text("Maintenance ON with MOTD: ", NamedTextColor.GRAY)
                     .append(Component.text(cfg.getString("presets." + key + ".reason", ""), NamedTextColor.WHITE));
-            presets.append(button(selected ? Component.text("▶ ").append(label) : label,
+            presets = presets.append(button(selected ? Component.text("▶ ").append(label) : label,
                     selected ? NamedTextColor.GOLD : NamedTextColor.DARK_GRAY,
                     "/maintenance on " + key + p, hover)).append(space);
         }
-        src.sendMessage(presets.build());
+        send(src, presets);
 
-        TextComponent.Builder timers = Component.text().append(Component.text(" Start in: ", NamedTextColor.GRAY));
+        Component timers = Component.empty().append(Component.text(" Start in: ", NamedTextColor.GRAY));
         for (String t : cfg.getStringList("panel-start-timers")) {
-            timers.append(button(t, NamedTextColor.YELLOW, "/maintenance timer " + t + p, "Maintenance " + t + " baad ON")).append(space);
+            timers = timers.append(button(t, NamedTextColor.YELLOW, "/maintenance timer " + t + p, "Start maintenance in " + t)).append(space);
         }
-        timers.append(Component.text(" Auto-OFF: ", NamedTextColor.GRAY));
+        timers = timers.append(Component.text(" Auto-OFF: ", NamedTextColor.GRAY));
         for (String t : cfg.getStringList("panel-end-timers")) {
-            timers.append(button(t, NamedTextColor.GOLD, "/maintenance endtimer " + t + p, "Abhi ON, " + t + " baad apne aap OFF")).append(space);
+            timers = timers.append(button(t, NamedTextColor.GOLD, "/maintenance endtimer " + t + p, "Turn ON now, OFF automatically after " + t)).append(space);
         }
-        timers.append(button("✖", NamedTextColor.RED, "/maintenance abort" + p, "Saare timers cancel"));
-        src.sendMessage(timers.build());
+        timers = timers.append(button("✖", NamedTextColor.RED, "/maintenance abort" + p, "Cancel all timers"));
+        send(src, timers);
 
-        TextComponent.Builder servers = Component.text().append(Component.text(" Servers: ", NamedTextColor.GRAY));
+        Component servers = Component.empty().append(Component.text(" Servers: ", NamedTextColor.GRAY));
         for (RegisteredServer server : plugin.proxy().getAllServers()) {
             String name = server.getServerInfo().getName();
             boolean on = plugin.isServerInMaintenance(name);
-            servers.append(button(Component.text(name + (on ? " ●" : " ○"), on ? NamedTextColor.RED : NamedTextColor.GREEN),
+            servers = servers.append(button(Component.text(name + (on ? " ●" : " ○"), on ? NamedTextColor.RED : NamedTextColor.GREEN),
                     NamedTextColor.DARK_GRAY, "/maintenance server " + name + p,
-                    Component.text(on ? "Click: " + name + " maintenance OFF" : "Click: sirf " + name + " ko maintenance mein daalo",
+                    Component.text(on ? "Click: take " + name + " out of maintenance" : "Click: put only " + name + " under maintenance",
                             NamedTextColor.GRAY))).append(space);
         }
-        src.sendMessage(servers.build());
+        send(src, servers);
 
-        src.sendMessage(Component.text(" Whitelist (" + data.whitelist.size() + "): ", NamedTextColor.GRAY)
-                .append(button("List", NamedTextColor.WHITE, "/maintenance list", "Whitelist dekho"))
+        send(src, Component.text(" Whitelist (" + data.whitelist.size() + "): ", NamedTextColor.GRAY)
+                .append(button("List", NamedTextColor.WHITE, "/maintenance list", "Show the maintenance whitelist"))
                 .append(space)
                 .append(Component.text("[+ Add]", NamedTextColor.GREEN, TextDecoration.BOLD)
                         .clickEvent(ClickEvent.suggestCommand("/maintenance add "))
-                        .hoverEvent(HoverEvent.showText(Component.text("Player ka naam likho", NamedTextColor.GRAY))))
+                        .hoverEvent(HoverEvent.showText(Component.text("Type a player name", NamedTextColor.GRAY))))
                 .append(space)
-                .append(button("Reload", NamedTextColor.AQUA, "/maintenance reload" + p, "Config reload")));
-        src.sendMessage(line());
+                .append(button("Reload", NamedTextColor.AQUA, "/maintenance reload" + p, "Reload the config")));
+        send(src, line());
     }
 
     private void whitelist(CommandSource src) {
         MaintenanceData data = plugin.data();
         if (data.whitelist.isEmpty()) {
-            src.sendMessage(plugin.msg("whitelist-empty"));
+            send(src, plugin.msg("whitelist-empty"));
             return;
         }
-        TextComponent.Builder b = Component.text().append(plugin.prefix())
+        Component b = Component.empty().append(plugin.prefix())
                 .append(Component.text("Whitelist: ", NamedTextColor.GRAY));
         for (String name : data.whitelist.values()) {
-            b.append(Component.text(name + " ", NamedTextColor.WHITE)
+            b = b.append(Component.text(name + " ", NamedTextColor.WHITE)
                     .append(Component.text("✖", NamedTextColor.RED))
                     .clickEvent(ClickEvent.runCommand("/maintenance remove " + name))
                     .hoverEvent(HoverEvent.showText(Component.text("Click to remove " + name, NamedTextColor.RED))))
                     .append(Component.text("  "));
         }
-        src.sendMessage(b.build());
+        send(src, b);
     }
 
     private void servers(CommandSource src) {
-        TextComponent.Builder b = Component.text().append(plugin.prefix());
+        Component b = Component.empty().append(plugin.prefix());
         for (RegisteredServer server : plugin.proxy().getAllServers()) {
             String name = server.getServerInfo().getName();
             boolean on = plugin.isServerInMaintenance(name);
-            b.append(Component.text(name + (on ? " ● " : " ○ "), on ? NamedTextColor.RED : NamedTextColor.GREEN)
+            b = b.append(Component.text(name + (on ? " ● " : " ○ "), on ? NamedTextColor.RED : NamedTextColor.GREEN)
                     .clickEvent(ClickEvent.runCommand("/maintenance server " + name))
                     .hoverEvent(HoverEvent.showText(Component.text("Click to toggle", NamedTextColor.GRAY))));
         }
-        src.sendMessage(b.build());
+        send(src, b);
     }
 
     private void help(CommandSource src) {
@@ -326,16 +327,16 @@ final class MaintenanceCommand implements SimpleCommand {
             "/maintenance - clickable panel",
             "/maintenance on [preset|reason] | off | toggle",
             "/maintenance preset <name> | reason <text>",
-            "/maintenance timer <time> [preset] - X time baad ON",
-            "/maintenance endtimer <time> - abhi ON, X time baad OFF",
-            "/maintenance abort - timers cancel",
+            "/maintenance timer <time> [preset] - start after a delay",
+            "/maintenance endtimer <time> - ON now, OFF after a delay",
+            "/maintenance abort - cancel timers",
             "/maintenance add|remove <player> | list",
             "/maintenance server <name> [on|off] | servers",
             "/maintenance motd | reload"
         };
-        src.sendMessage(plugin.prefix().append(Component.text("Commands:", NamedTextColor.WHITE)));
+        send(src, plugin.prefix().append(Component.text("Commands:", NamedTextColor.WHITE)));
         for (String l : lines) {
-            src.sendMessage(Component.text(" " + l, NamedTextColor.GRAY));
+            send(src, Component.text(" " + l, NamedTextColor.GRAY));
         }
     }
 

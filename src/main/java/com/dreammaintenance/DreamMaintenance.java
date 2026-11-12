@@ -17,6 +17,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.ShadowColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -259,12 +260,39 @@ public final class DreamMaintenance {
     }
 
     Component mini(String miniMessage, String... pairs) {
-        return MiniMessage.miniMessage().deserialize(miniMessage, placeholders(pairs));
+        return shadow(MiniMessage.miniMessage().deserialize(miniMessage, placeholders(pairs)));
     }
 
     Component prefix() {
-        return MiniMessage.miniMessage().deserialize(config.getString("messages.prefix", ""));
+        return shadow(MiniMessage.miniMessage().deserialize(config.getString("messages.prefix", "")));
     }
+
+    /** Adds the configured text shadow (text-shadow in config.yml). */
+    Component shadow(Component component) {
+        ShadowColor shadow = parseShadow(config.getString("text-shadow", "#000000"));
+        return shadow == null ? component : component.shadowColor(shadow);
+    }
+
+    /** Parses "#RRGGBB" / "#RRGGBBAA" into a text shadow, or null for "none"/invalid. */
+    static ShadowColor parseShadow(String value) {
+        if (value == null) {
+            return null;
+        }
+        String hex = value.trim().replace("#", "");
+        try {
+            if (hex.length() == 6) {
+                return ShadowColor.shadowColor(0xFF000000 | Integer.parseUnsignedInt(hex, 16));
+            }
+            if (hex.length() == 8) {
+                int rgba = (int) Long.parseLong(hex, 16);
+                return ShadowColor.shadowColor((rgba >>> 8) | (rgba << 24));
+            }
+        } catch (NumberFormatException ignored) {
+            // fall through
+        }
+        return null;
+    }
+
 
     Component text(String key, String... pairs) {
         return mini(config.getString("messages." + key, key), pairs);
