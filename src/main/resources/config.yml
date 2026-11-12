@@ -1,0 +1,86 @@
+# =========================================================
+#  DreamMaintenance - Velocity config
+#  /maintenance  likho -> clickable panel khulega, ek click mein sab kaam
+# =========================================================
+
+# Maintenance ON hone par server list mein ye MOTD dikhega.
+# Placeholders: <reason> = selected preset ka reason, <remaining> = timer ka bacha time
+motd:
+  line1: "<gradient:#FF5555:#FFAA00><bold>⚠ SERVER IN MAINTENANCE ⚠</bold></gradient>"
+  line2: "<gray><reason></gray> <dark_gray>|</dark_gray> <yellow><remaining></yellow>"
+
+# Player count ki jagah red text (server list mein)
+version-text: "<red>⚠ Maintenance"
+
+# Player count pe mouse le jaane par ye lines dikhengi
+hover-lines:
+  - "<red><bold>Maintenance Mode</bold></red>"
+  - "<gray>Reason: <white><reason></white></gray>"
+  - "<gray><remaining></gray>"
+  - ""
+  - "<gray>Discord: <aqua>discord.gg/yourserver</aqua></gray>"
+
+# plugins/dreammaintenance/maintenance-icon.png (64x64) daaloge to wo icon dikhega
+use-custom-icon: true
+
+# <remaining> ka text: jab end-timer laga ho / na laga ho
+remaining-format: "Wapas aayenge: <time>"
+no-timer-text: "Jaldi wapas aayenge!"
+
+# One-click presets - /maintenance panel mein button ban jaate hain.
+# Button dabate hi maintenance ON + MOTD mein ye reason aa jayega.
+presets:
+  update:
+    display: "<aqua>Update</aqua>"
+    reason: "Naya update aa raha hai!"
+  bugfix:
+    display: "<yellow>Bug Fix</yellow>"
+    reason: "Bugs fix ho rahe hain"
+  event:
+    display: "<light_purple>Event</light_purple>"
+    reason: "Event ki taiyari chal rahi hai"
+  restart:
+    display: "<red>Restart</red>"
+    reason: "Server restart ho raha hai"
+  emergency:
+    display: "<dark_red>Emergency</dark_red>"
+    reason: "Emergency fix chal raha hai"
+default-preset: update
+
+# Maintenance ON hote hi online players (jinke paas bypass nahi) ko kick karna hai?
+kick-online-players: true
+
+# Per-server maintenance mein players ko yahan bheja jayega
+fallback-server: lobby
+
+# Timer start hone se pehle in seconds par broadcast hoga
+countdown-broadcast-at: [600, 300, 120, 60, 30, 15, 10, 5, 4, 3, 2, 1]
+
+# Panel ke timer buttons
+panel-start-timers: [1m, 5m, 10m]
+panel-end-timers: [30m, 1h, 2h]
+
+messages:
+  prefix: "<gradient:#FF5555:#FFAA00><bold>Maintenance</bold></gradient> <dark_gray>»</dark_gray> "
+  # Kick / join-deny screen (prefix nahi lagta)
+  kick-message: "<red><bold>⚠ Server Maintenance ⚠</bold></red>\n\n<gray><reason></gray>\n<yellow><remaining></yellow>"
+  server-denied: "<red><server></red> <gray>abhi maintenance mein hai.</gray>"
+  enabled: "<red>Maintenance <bold>ON</bold> ho gaya.</red> <gray>Reason: <white><reason>"
+  disabled: "<green>Maintenance <bold>OFF</bold> ho gaya. Server sabke liye khul gaya!</green>"
+  already-enabled: "<gray>Maintenance pehle se ON hai.</gray>"
+  already-disabled: "<gray>Maintenance pehle se OFF hai.</gray>"
+  countdown: "<red>Maintenance <yellow><time></yellow> mein shuru hoga!</red> <gray>(<reason>)</gray>"
+  start-timer-set: "<yellow>Maintenance <white><time></white> mein shuru hoga.</yellow>"
+  end-timer-set: "<yellow>Maintenance <white><time></white> baad apne aap OFF ho jayega.</yellow>"
+  timers-aborted: "<gray>Saare timers cancel kar diye.</gray>"
+  reason-set: "<gray>Reason set: <white><reason>"
+  unknown-preset: "<red>Ye preset nahi mila: <white><preset>"
+  invalid-time: "<red>Galat time! Example: 30s, 5m, 1h30m</red>"
+  whitelist-added: "<green><player></green> <gray>whitelist mein add ho gaya.</gray>"
+  whitelist-removed: "<red><player></red> <gray>whitelist se hata diya.</gray>"
+  whitelist-not-found: "<red><player> whitelist mein nahi hai.</red>"
+  whitelist-empty: "<gray>Whitelist khaali hai.</gray>"
+  server-enabled: "<red><server></red> <gray>ab maintenance mein hai.</gray>"
+  server-disabled: "<green><server></green> <gray>maintenance se bahar.</gray>"
+  unknown-server: "<red>Server nahi mila: <white><server>"
+  reloaded: "<green>Config reload ho gaya.</green>"

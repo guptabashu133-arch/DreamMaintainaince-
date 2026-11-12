@@ -1,0 +1,8 @@
+{
+  "id": "dreammaintenance",
+  "name": "DreamMaintenance",
+  "version": "${version}",
+  "description": "One-click maintenance mode with MOTD presets, timers, whitelist and per-server maintenance",
+  "authors": ["Dream"],
+  "main": "com.dreammaintenance.DreamMaintenance"
+}

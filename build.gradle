@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.dreammaintenance'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    compileOnly 'com.velocitypowered:velocity-api:3.4.0'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+processResources {
+    def props = [version: project.version]
+    inputs.properties props
+    filesMatching('velocity-plugin.json') {
+        expand props
+    }
+}
+
+jar {
+    archiveFileName = "DreamMaintenance-${project.version}.jar"
+}
